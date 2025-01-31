@@ -11,7 +11,7 @@ import (
 func InitDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error opening the database: %V", err)
 
 	}
 	return db

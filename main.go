@@ -1,6 +1,7 @@
 package main
 
 import (
+	"forum/database"
 	"forum/web"
 	"log"
 	"net/http"
@@ -9,6 +10,12 @@ import (
 func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
+	db := database.InitDB()
+
+	defer db.Close()
+
+	web.MakeTables(db)
 
 	http.HandleFunc("/", web.PageHandler)
 
