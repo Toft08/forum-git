@@ -21,6 +21,7 @@ func MakeTables(db *sql.DB) {
 	}
 	createPostTableQuery := `
 		CREATE TABLE IF NOT EXISTS Post (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title TEXT NOT NULL,
     	content TEXT NOT NULL,
    		user_id INTEGER NOT NULL,

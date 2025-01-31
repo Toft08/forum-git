@@ -22,9 +22,14 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.LoggedIn, _ = VerifySession(r)
 	// Fetch posts from the database
-	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
+	rows, err := db.Query(`
+        SELECT p.id, p.title, p.content, u.username
+        FROM Post p
+        JOIN User u ON p.user_id = u.id
+        ORDER BY p.created_at DESC;
+    `)
 	if err != nil {
-		// log.Println("Error fetching posts:", err)
+		log.Println("Error fetching posts:", err)
 		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
 		return
 	}
@@ -32,11 +37,16 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	for rows.Next() {
 		var id int
-		rows.Scan(&id)
+		if err := rows.Scan(&id); err != nil {
+			ErrorHandler(w, "Error scanning post ID", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("Fetching post details for ID: %d", id)
 		post, err := GetPostDetails(id)
-
 		if err != nil {
-			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+			log.Println("Error fetching post details:", err)
+			ErrorHandler(w, "Error fetching post details", http.StatusInternalServerError)
+			return
 		}
 		data.Posts = append(data.Posts, *post)
 

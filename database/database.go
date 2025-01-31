@@ -11,8 +11,10 @@ import (
 func InitDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
-		log.Println("Error opening the database: %V", err)
-
+		log.Fatal("Error opening the database:", err)
+	}
+	if err = db.Ping(); err != nil {
+		log.Fatal("Error pinging the database:", err)
 	}
 	return db
 }

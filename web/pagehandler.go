@@ -13,6 +13,9 @@ var db *sql.DB
 
 var tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
+func SetDB(database *sql.DB) {
+    db = database
+}
 func PageHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := PageDetails{}
